@@ -74,6 +74,22 @@ namespace Elemental
             Console.Out.Write(span);
         }
 
+        public static void SetCode(string str)
+        {
+            if (str == null || str.Length == 0 || str.Length > 2) return; // nope
+
+            Span<char> span = stackalloc char[5];
+            span[0] = Escape;
+            span[1] = '[';
+
+            for (int i = 0; i < str.Length; i++) {
+                span[2 + i] = str[i];
+            }
+            span[2 + str.Length] = 'm';
+
+            Console.Out.Write(span.Slice(0, 3 + str.Length));
+        }
+
         public static void SetColor(bool foreground, byte r, byte g, byte b)
         {
             Span<char> span = stackalloc char[32]; // more than enough room

@@ -7,8 +7,8 @@
     <PackageOutputPath>../nupkgs</PackageOutputPath>
     <LangVersion>latest</LangVersion>
 
-    <VersionPrefix>0.1.0</VersionPrefix>
-
+    <VersionPrefix>0.2.0</VersionPrefix>
+    <PackageLicenseUrl>https://github.com/MarkPflug/Elemental.SysInfoTool/blob/master/License.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/MarkPflug/Elemental.SysInfoTool</PackageProjectUrl>
     <PackageIconUrl>https://markpflug.github.io/MarkPflug.png</PackageIconUrl>
     <Authors>Mark Pflug</Authors>
