@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <OutputType>exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>sysinfo</ToolCommandName>
+    <PackageOutputPath>../nupkgs</PackageOutputPath>
+    <LangVersion>latest</LangVersion>
+
+    <VersionPrefix>0.1.0</VersionPrefix>
+
+    <PackageProjectUrl>https://github.com/MarkPflug/Elemental.SysInfoTool</PackageProjectUrl>
+    <PackageIconUrl>https://markpflug.github.io/MarkPflug.png</PackageIconUrl>
+    <Authors>Mark Pflug</Authors>
+    <Title>Elemental System Info Tool</Title>
+    <Description>A dotnet global tool that outputs system information.</Description>
+    <Copyright>Copyright © Mark Pflug 2018</Copyright>
+    <PackageTags>systeminfo dotnet global tool</PackageTags>
+    <RepositoryUrl>https://github.com/MarkPflug/Elemental.SysInfoTool.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>  
+</Project>
