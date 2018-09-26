@@ -1,4 +1,7 @@
-﻿# 0.4.0
+﻿# 0.4.1
+- Bug fix for null drive format.
+
+# 0.4.0
 - Add storage info
 
 # 0.3.0
