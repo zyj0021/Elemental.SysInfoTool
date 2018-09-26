@@ -16,14 +16,16 @@ class Tool
         var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         if (isWindows)
+        {
             EnableConsoleColor();
+        }
 
         ColorConsole.SetForeground(0x40, 0x80, 0x20);
         Value("Tool Version", typeof(Tool).Assembly.GetName().Version.ToString());
 
         Header("Machine");
         Value("Architecture", RuntimeInformation.ProcessArchitecture.ToString());
-        Value("Runtime Version", RuntimeEnvironment.GetSystemVersion());        
+        Value("Runtime Version", RuntimeEnvironment.GetSystemVersion());
 
         Value("MachineName", Environment.MachineName);
         var os =
@@ -42,11 +44,35 @@ class Tool
         Value("SystemStarted", DateTime.Now.AddMilliseconds(-Environment.TickCount).ToString() + " (local)");
         Value("SystemUpTime", TimeSpan.FromMilliseconds(tickCount).ToString());
 
+        Header("Storage");
+        var drives = System.IO.DriveInfo.GetDrives();
+
+        bool first = true;
+        foreach (var drive in drives)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                Console.WriteLine();
+            }
+
+            Value("Name", drive.Name);
+            Value("Label", drive.VolumeLabel);
+            Value("Type", drive.DriveType.ToString());
+            Value("Format", drive.DriveFormat.ToString());
+            Value("IsReady", drive.IsReady.ToString());
+            Value("Size", FormatSize(drive.TotalSize));
+            Value("Free", FormatSize(drive.AvailableFreeSpace));
+        }
+
         Header("Time");
         Value("UTC Time", DateTime.UtcNow.ToString());
         Value("Local Time", DateTime.Now.ToString());
         Value("TimeZone", TimeZoneInfo.Local.StandardName);
-        
+
 
         Header("Region/Culture");
         Value("Region", RegionInfo.CurrentRegion.Name);
@@ -59,21 +85,26 @@ class Tool
 
         Header("Network");
 
+        first = true;
+        foreach (var net in NetworkInterface.GetAllNetworkInterfaces())
         {
-            bool first = true;
-            foreach (var net in NetworkInterface.GetAllNetworkInterfaces())
+            if (net.OperationalStatus == OperationalStatus.Up && net.NetworkInterfaceType != NetworkInterfaceType.Loopback)
             {
-                if (net.OperationalStatus == OperationalStatus.Up && net.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                if (first)
                 {
-                    if (first) first = false;
-                    else Console.WriteLine();
-                    Value("Type", net.NetworkInterfaceType.ToString());
-                    Value("Description", net.Description);
-                    var props = net.GetIPProperties();
-                    foreach (var addr in props.UnicastAddresses)
-                    {
-                        Value(addr.Address.AddressFamily.ToString(), addr.Address.ToString());
-                    }
+                    first = false;
+                }
+                else
+                {
+                    Console.WriteLine();
+                }
+
+                Value("Type", net.NetworkInterfaceType.ToString());
+                Value("Description", net.Description);
+                var props = net.GetIPProperties();
+                foreach (var addr in props.UnicastAddresses)
+                {
+                    Value(addr.Address.AddressFamily.ToString(), addr.Address.ToString());
                 }
             }
         }
@@ -107,6 +138,30 @@ class Tool
         ColorConsole.SetDefaults();
     }
 
+    const long KB = 1024;
+    const long MB = KB * KB;
+    const long GB = MB * KB;
+    const long TB = GB * KB;
+
+    static string FormatSize(long size)
+    {
+        if (size > TB) {
+            return (size / (float)TB).ToString("0.00") + "TB";
+        }
+
+        if (size > GB)
+        {
+            return (size / (float)GB).ToString("0.00") + "GB";
+        }
+
+        if (size > MB)
+        {
+            return (size / (float)MB).ToString("0.00") + "MB";
+        }
+
+        return size + "b";
+    }
+
     static void LSColors(string key, string value)
     {
         var items = value.Split(':');
@@ -121,7 +176,10 @@ class Tool
         bool first = true;
         foreach (var item in items)
         {
-            if (first) first = false;
+            if (first)
+            {
+                first = false;
+            }
             else
             {
                 Console.Write(new string(' ', EnvVarWidth + 2));
@@ -196,7 +254,8 @@ class Tool
         {
             ColorConsole.EnableColorMode();
         }
-        catch (Exception) {
+        catch (Exception)
+        {
             // this might throw on linux/osx
             // but we don't need to call
         }
@@ -237,9 +296,12 @@ class Tool
         ColorConsole.SetForeground(0xe0, 0xe0, 0xe0);
 
         bool first = true;
-        foreach(var value in values)
+        foreach (var value in values)
         {
-            if (first) first = false;
+            if (first)
+            {
+                first = false;
+            }
             else
             {
                 Console.Write(new string(' ', width + 2));
@@ -247,7 +309,7 @@ class Tool
             Console.Write(value);
             Console.WriteLine();
         }
-        
+
         ColorConsole.SetDefaults();
     }
 }

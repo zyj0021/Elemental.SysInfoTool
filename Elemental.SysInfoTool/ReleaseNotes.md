@@ -1,4 +1,7 @@
-﻿# 0.3.0
+﻿# 0.4.0
+- Add storage info
+
+# 0.3.0
 - Add ProcessorCount
 - Add SystemPageSize
 - Add system start/up time
