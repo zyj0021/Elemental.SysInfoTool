@@ -7,7 +7,7 @@
     <PackageOutputPath>../nupkgs</PackageOutputPath>
     <LangVersion>latest</LangVersion>
 
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.3.0</VersionPrefix>
     <PackageLicenseUrl>https://github.com/MarkPflug/Elemental.SysInfoTool/blob/master/License.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/MarkPflug/Elemental.SysInfoTool</PackageProjectUrl>
     <PackageIconUrl>https://markpflug.github.io/MarkPflug.png</PackageIconUrl>
@@ -18,5 +18,8 @@
     <PackageTags>systeminfo dotnet global tool</PackageTags>
     <RepositoryUrl>https://github.com/MarkPflug/Elemental.SysInfoTool.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-  </PropertyGroup>  
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSBuildGitHash" Version="0.3.0" />
+  </ItemGroup>  
 </Project>

@@ -20,10 +20,10 @@ class Tool
 
         ColorConsole.SetForeground(0x40, 0x80, 0x20);
         Value("Tool Version", typeof(Tool).Assembly.GetName().Version.ToString());
+
         Header("Machine");
         Value("Architecture", RuntimeInformation.ProcessArchitecture.ToString());
-        Value("Runtime Version", RuntimeEnvironment.GetSystemVersion());
-
+        Value("Runtime Version", RuntimeEnvironment.GetSystemVersion());        
 
         Value("MachineName", Environment.MachineName);
         var os =
@@ -36,11 +36,17 @@ class Tool
             : "Other";
         Value("OS", os);
         Value("OSVersion", Environment.OSVersion.ToString());
+        Value("ProcessorCount", Environment.ProcessorCount.ToString());
+        Value("SystemPageSize", Environment.SystemPageSize.ToString());
+        var tickCount = Environment.TickCount;
+        Value("SystemStarted", DateTime.Now.AddMilliseconds(-Environment.TickCount).ToString() + " (local)");
+        Value("SystemUpTime", TimeSpan.FromMilliseconds(tickCount).ToString());
 
         Header("Time");
         Value("UTC Time", DateTime.UtcNow.ToString());
         Value("Local Time", DateTime.Now.ToString());
         Value("TimeZone", TimeZoneInfo.Local.StandardName);
+        
 
         Header("Region/Culture");
         Value("Region", RegionInfo.CurrentRegion.Name);
