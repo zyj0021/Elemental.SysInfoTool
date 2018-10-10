@@ -54,7 +54,7 @@ class Tool
                          Name = name,
                          Path = Environment.GetFolderPath(value, Environment.SpecialFolderOption.DoNotVerify),
                      })
-                .OrderBy(sf => sf.Name)
+                .OrderBy(sf => sf.Name, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
         var maxSpecialFolderNameWith = specialFolders.Max(sf => sf.Name.Length);
