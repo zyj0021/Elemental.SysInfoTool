@@ -37,12 +37,13 @@ namespace Elemental
             DisableNewLineAutoReturn = 0x0008,
         }
 
+        // NoInlining, because I think it will avoid a potential JIT error on a non-windows platform. 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void EnableColorMode()
+        public static bool EnableColorMode()
         {
             var h = GetStdHandle(new IntPtr(ConsoleDevice.StdOutput));
             var flags = ConsoleOutputMode.EnableProcessedOutput | ConsoleOutputMode.EnableVirtualTerminalProcessing;
-            var s = SetConsoleMode(h, (uint)flags);
+            return SetConsoleMode(h, (uint)flags);
         }
 
         [DllImport("kernel32.dll")]

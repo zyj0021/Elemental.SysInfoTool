@@ -9,91 +9,47 @@ using System.Runtime.InteropServices;
 
 class Tool
 {
+    static bool IsColorEnabled = false;
+
     public static void Main(string[] args)
     {
-        var isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-        var isOSX = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-        if (isWindows)
+        try
         {
-            EnableConsoleColor();
-        }
+            var isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+            var isOSX = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+            var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        ColorConsole.SetForeground(0x40, 0x80, 0x20);
-        Value("Tool Version", typeof(Tool).Assembly.GetName().Version.ToString());
+            IsColorEnabled = TryEnableConsoleColor();
 
-        Header("Machine");
-        Value("Architecture", RuntimeInformation.ProcessArchitecture.ToString());
-        Value("Runtime Version", RuntimeEnvironment.GetSystemVersion());
+            ColorConsole.SetForeground(0x40, 0x80, 0x20);
+            Value("Tool Version", typeof(Tool).Assembly.GetName().Version.ToString());
 
-        Value("MachineName", Environment.MachineName);
-        var os =
-            isWindows
-            ? "Windows"
-            : isLinux
-            ? "Linux"
-            : isOSX
-            ? "OSX"
-            : "Other";
-        Value("OS", os);
-        Value("OSVersion", Environment.OSVersion.ToString());
-        Value("ProcessorCount", Environment.ProcessorCount.ToString());
-        Value("SystemPageSize", Environment.SystemPageSize.ToString());
-        var tickCount = Environment.TickCount;
-        Value("SystemStarted", DateTime.Now.AddMilliseconds(-Environment.TickCount).ToString() + " (local)");
-        Value("SystemUpTime", TimeSpan.FromMilliseconds(tickCount).ToString());
+            Header("Machine");
+            Value("Architecture", RuntimeInformation.ProcessArchitecture.ToString());
+            Value("Runtime Version", RuntimeEnvironment.GetSystemVersion());
 
-        Header("Storage");
-        var drives = System.IO.DriveInfo.GetDrives();
+            Value("MachineName", Environment.MachineName);
+            var os =
+                isWindows
+                ? "Windows"
+                : isLinux
+                ? "Linux"
+                : isOSX
+                ? "OSX"
+                : "Other";
+            Value("OS", os);
+            Value("OSVersion", Environment.OSVersion.ToString());
+            Value("ProcessorCount", Environment.ProcessorCount.ToString());
+            Value("SystemPageSize", Environment.SystemPageSize.ToString());
+            var tickCount = Environment.TickCount;
+            Value("SystemStarted", DateTime.Now.AddMilliseconds(-Environment.TickCount).ToString() + " (local)");
+            Value("SystemUpTime", TimeSpan.FromMilliseconds(tickCount).ToString());
 
-        bool first = true;
-        foreach (var drive in drives)
-        {
-            if (first)
-            {
-                first = false;
-            }
-            else
-            {
-                Console.WriteLine();
-            }
+            Header("Storage");
+            var drives = System.IO.DriveInfo.GetDrives();
 
-            
-            Value("Name", drive.Name);
-            Value("Type", drive.DriveType.ToString());
-            Value("IsReady", drive.IsReady.ToString());
-
-            if (drive.IsReady)
-            {
-                Value("Label", drive.VolumeLabel);
-                Value("Format", drive.DriveFormat ?? "Unknown");
-                Value("Size", FormatSize(drive.TotalSize));
-                Value("Free", FormatSize(drive.AvailableFreeSpace));
-            }
-        }
-
-        Header("Time");
-        Value("UTC Time", DateTime.UtcNow.ToString());
-        Value("Local Time", DateTime.Now.ToString());
-        Value("TimeZone", TimeZoneInfo.Local.StandardName);
-
-
-        Header("Region/Culture");
-        Value("Region", RegionInfo.CurrentRegion.Name);
-        Value("Culture", CultureInfo.CurrentCulture.Name);
-        Value("UICulture", CultureInfo.CurrentUICulture.Name);
-
-        Header("User");
-        Value("Domain", Environment.UserDomainName);
-        Value("User", Environment.UserName);
-
-        Header("Network");
-
-        first = true;
-        foreach (var net in NetworkInterface.GetAllNetworkInterfaces())
-        {
-            if (net.OperationalStatus == OperationalStatus.Up && net.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+            bool first = true;
+            foreach (var drive in drives)
             {
                 if (first)
                 {
@@ -104,43 +60,99 @@ class Tool
                     Console.WriteLine();
                 }
 
-                Value("Type", net.NetworkInterfaceType.ToString());
-                Value("Description", net.Description);
-                var props = net.GetIPProperties();
-                foreach (var addr in props.UnicastAddresses)
+
+                Value("Name", drive.Name);
+                Value("Type", drive.DriveType.ToString());
+                Value("IsReady", drive.IsReady.ToString());
+
+                if (drive.IsReady)
                 {
-                    Value(addr.Address.AddressFamily.ToString(), addr.Address.ToString());
+                    try
+                    {
+                        Value("Label", drive.VolumeLabel);
+                        Value("Format", drive.DriveFormat ?? "Unknown");
+                        Value("Size", FormatSize(drive.TotalSize));
+                        Value("Free", FormatSize(drive.AvailableFreeSpace));
+                    }
+                    catch
+                    {
+
+                    }
                 }
             }
-        }
 
-        Header("Environment");
+            Header("Time");
+            Value("UTC Time", DateTime.UtcNow.ToString());
+            Value("Local Time", DateTime.Now.ToString());
+            Value("TimeZone", TimeZoneInfo.Local.StandardName);
 
-        foreach (var kvp in Environment.GetEnvironmentVariables().Cast<DictionaryEntry>().OrderBy(kvp => kvp.Key))
-        {
-            var key = (string)kvp.Key;
-            var value = (string)kvp.Value;
 
-            if (StringComparer.OrdinalIgnoreCase.Equals(key, "LS_COLORS"))
+            Header("Region/Culture");
+            Value("Region", RegionInfo.CurrentRegion.Name);
+            Value("Culture", CultureInfo.CurrentCulture.Name);
+            Value("UICulture", CultureInfo.CurrentUICulture.Name);
+
+            Header("User");
+            Value("Domain", Environment.UserDomainName);
+            Value("User", Environment.UserName);
+
+            Header("Network");
+
+            first = true;
+            foreach (var net in NetworkInterface.GetAllNetworkInterfaces())
             {
-                LSColors(key, value);
-            }
-            else
-            {
-                if (SplitEnvVars.Contains(key))
+                if (net.OperationalStatus == OperationalStatus.Up && net.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                 {
-                    var separator = isWindows ? ';' : ':';
-                    var values = value.Split(separator);
-                    Value(key, values, EnvVarWidth);
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        Console.WriteLine();
+                    }
+
+                    Value("Type", net.NetworkInterfaceType.ToString());
+                    Value("Description", net.Description);
+                    var props = net.GetIPProperties();
+                    foreach (var addr in props.UnicastAddresses)
+                    {
+                        Value(addr.Address.AddressFamily.ToString(), addr.Address.ToString());
+                    }
+                }
+            }
+
+            Header("Environment");
+
+            foreach (var kvp in Environment.GetEnvironmentVariables().Cast<DictionaryEntry>().OrderBy(kvp => kvp.Key))
+            {
+                var key = (string)kvp.Key;
+                var value = (string)kvp.Value;
+
+                if (StringComparer.OrdinalIgnoreCase.Equals(key, "LS_COLORS"))
+                {
+                    LSColors(key, value);
                 }
                 else
                 {
-                    Value(key, value, EnvVarWidth);
+                    if (SplitEnvVars.Contains(key))
+                    {
+                        var separator = isWindows ? ';' : ':';
+                        var values = value.Split(separator);
+                        Value(key, values, EnvVarWidth);
+                    }
+                    else
+                    {
+                        Value(key, value, EnvVarWidth);
+                    }
                 }
             }
         }
-
-        ColorConsole.SetDefaults();
+        finally
+        {
+            // ensure restore the original settings on exit
+            ColorConsole.SetDefaults();
+        }
     }
 
     const long KB = 1024;
@@ -150,7 +162,8 @@ class Tool
 
     static string FormatSize(long size)
     {
-        if (size > TB) {
+        if (size > TB)
+        {
             return (size / (float)TB).ToString("0.00") + "TB";
         }
 
@@ -167,14 +180,62 @@ class Tool
         return size + "b";
     }
 
+    static void SetForegroundColor(int value)
+    {
+        if (IsColorEnabled)
+        {
+
+            var r = (byte)(value >> 16 & 0xff);
+            var g = (byte)(value >> 8 & 0xff);
+            var b = (byte)(value & 0xff);
+            ColorConsole.SetForeground(r, g, b);
+        }
+    }
+
+    static void SetLabelColor()
+    {
+        SetForegroundColor(LabelColor);
+    }
+
+    static void SetSeparatorColor()
+    {
+        SetForegroundColor(LabelColor);
+    }
+
+    static void SetValueColor()
+    {
+        SetForegroundColor(ValueColor);
+    }
+
+    static void SetHeaderColor()
+    {
+        SetForegroundColor(HeaderColor);
+    }
+
+    static void Label(string label)
+    {
+        SetLabelColor();
+        Console.Write(label);
+    }
+
+    const int HeaderColor = 0x40a0f0;
+    const int LabelColor = 0x60c060;
+    const int SeparatorColor = 0xa0a0a0;
+    const int ValueColor = 0xe0e0e0;
+
+    static void Separator(string separator = ": ")
+    {
+        SetSeparatorColor();
+        Console.Write(separator);
+    }
+
     static void LSColors(string key, string value)
     {
         var items = value.Split(':');
-        ColorConsole.SetForeground(0x60, 0xc0, 0x60);
+
         Console.Write(String.Format("{0," + EnvVarWidth + "}", key));
 
-        ColorConsole.SetForeground(0xa0, 0xa0, 0xa0);
-        Console.Write(": ");
+        Separator();
 
         ColorConsole.SetForeground(0xe0, 0xe0, 0xe0);
 
@@ -253,23 +314,21 @@ class Tool
         ["rc"] = "right code",
         ["ec"] = "end code",
     };
-    static void EnableConsoleColor()
+
+    static bool TryEnableConsoleColor()
     {
-        try
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            ColorConsole.EnableColorMode();
+            return ColorConsole.EnableColorMode();
         }
-        catch (Exception)
-        {
-            // this might throw on linux/osx
-            // but we don't need to call
-        }
+        // other platforms should support VT escape sequences normally, I think... ?
+        return true;
     }
 
     static void Header(string heading)
     {
         Console.WriteLine();
-        ColorConsole.SetForeground(0x40, 0xa0, 0xf0);
+        SetHeaderColor();
 
         var l = HeaderWidth - 2 - PrePadCount - heading.Length;
 
@@ -292,13 +351,35 @@ class Tool
 
     static void Value(string name, IEnumerable<string> values, int width = DefaultNameWidth)
     {
-        ColorConsole.SetForeground(0x60, 0xc0, 0x60);
-        Console.Write(String.Format("{0," + width + "}", name));
+        Label(String.Format("{0," + width + "}", name));
+        Separator();
+        SetValueColor();
 
-        ColorConsole.SetForeground(0xa0, 0xa0, 0xa0);
-        Console.Write(": ");
+        bool first = true;
+        foreach (var value in values)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                Console.Write(new string(' ', width + 2));
+            }
+            Console.Write(value);
+            Console.WriteLine();
+        }
 
-        ColorConsole.SetForeground(0xe0, 0xe0, 0xe0);
+        ColorConsole.SetDefaults();
+    }
+
+    static void Error(string name, IEnumerable<string> values, int width = DefaultNameWidth)
+    {
+        Label(String.Format("{0," + width + "}", name));
+
+        Separator();
+
+        SetValueColor();
 
         bool first = true;
         foreach (var value in values)
