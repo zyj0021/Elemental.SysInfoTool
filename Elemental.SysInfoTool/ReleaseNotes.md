@@ -1,4 +1,7 @@
-﻿# 0.4.2
+﻿# 0.5.0
+- Add SpecialFolders to output. Thanks @atifaziz
+
+# 0.4.2
 - Bug fix for drive not ready.
 
 # 0.4.1

@@ -45,6 +45,23 @@ class Tool
             Value("SystemStarted", DateTime.Now.AddMilliseconds(-Environment.TickCount).ToString() + " (local)");
             Value("SystemUpTime", TimeSpan.FromMilliseconds(tickCount).ToString());
 
+            Header("Special Folders");
+            var specialFolders =
+                Enum.GetNames(typeof(Environment.SpecialFolder))
+                    .Zip(Enum.GetValues(typeof(Environment.SpecialFolder)).Cast<Environment.SpecialFolder>(),
+                         (name, value) => new
+                         {
+                             Name = name,
+                             Path = Environment.GetFolderPath(value, Environment.SpecialFolderOption.DoNotVerify),
+                         })
+                    .OrderBy(sf => sf.Name, StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+            var maxSpecialFolderNameWith = specialFolders.Max(sf => sf.Name.Length);
+
+            foreach (var specialFolder in specialFolders)
+                Value(specialFolder.Name, specialFolder.Path, maxSpecialFolderNameWith);
+
             Header("Storage");
             var drives = System.IO.DriveInfo.GetDrives();
 
