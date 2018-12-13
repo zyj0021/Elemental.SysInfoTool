@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Year>$([System.DateTime]::Now.Year)</Year>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>exe</OutputType>
     <PackAsTool>true</PackAsTool>
@@ -7,19 +8,24 @@
     <PackageOutputPath>../nupkgs</PackageOutputPath>
     <LangVersion>latest</LangVersion>
 
-    <VersionPrefix>0.4.1</VersionPrefix>
+    <VersionPrefix>0.4.2</VersionPrefix>
     <PackageLicenseUrl>https://github.com/MarkPflug/Elemental.SysInfoTool/blob/master/License.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/MarkPflug/Elemental.SysInfoTool</PackageProjectUrl>
     <PackageIconUrl>https://markpflug.github.io/MarkPflug.png</PackageIconUrl>
     <Authors>Mark Pflug</Authors>
     <Title>Elemental System Info Tool</Title>
     <Description>A dotnet global tool that outputs system information.</Description>
-    <Copyright>Copyright © Mark Pflug 2018</Copyright>
+    <Copyright>Copyright © Mark Pflug $(Year)</Copyright>
     <PackageTags>systeminfo dotnet global tool</PackageTags>
     <RepositoryUrl>https://github.com/MarkPflug/Elemental.SysInfoTool.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+
+  <Target Name="PrepareNupkg" BeforeTargets="Build">
+    <MakeDir Directories="$(PackageOutputPath)" />
+  </Target>
+
   <ItemGroup>
-    <PackageReference Include="MSBuildGitHash" Version="0.3.0" />
-  </ItemGroup>  
+    <PackageReference Include="MSBuildGitHash" Version="0.4.1" />
+  </ItemGroup>
 </Project>

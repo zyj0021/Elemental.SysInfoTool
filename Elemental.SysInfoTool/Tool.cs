@@ -59,13 +59,18 @@ class Tool
                 Console.WriteLine();
             }
 
+            
             Value("Name", drive.Name);
-            Value("Label", drive.VolumeLabel);
             Value("Type", drive.DriveType.ToString());
-            Value("Format", drive.DriveFormat ?? "Unknown");
             Value("IsReady", drive.IsReady.ToString());
-            Value("Size", FormatSize(drive.TotalSize));
-            Value("Free", FormatSize(drive.AvailableFreeSpace));
+
+            if (drive.IsReady)
+            {
+                Value("Label", drive.VolumeLabel);
+                Value("Format", drive.DriveFormat ?? "Unknown");
+                Value("Size", FormatSize(drive.TotalSize));
+                Value("Free", FormatSize(drive.AvailableFreeSpace));
+            }
         }
 
         Header("Time");
