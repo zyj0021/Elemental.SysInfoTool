@@ -21,7 +21,7 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
-  <Target Name="PrepareNupkg" BeforeTargets="Build">
+  <Target Name="PrepareNupkg" BeforeTargets="Build,Restore">
     <MakeDir Directories="$(PackageOutputPath)" />
   </Target>
 
