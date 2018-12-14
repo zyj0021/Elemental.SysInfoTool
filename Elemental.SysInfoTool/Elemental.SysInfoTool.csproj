@@ -21,7 +21,8 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
-  <Target Name="PrepareNupkg" BeforeTargets="Build,Restore">
+  <Target Name="PrepareNupkg" BeforeTargets="ResolvePackageAssets">
+    <!-- the package folder must exist before nuget restore runs -->
     <MakeDir Directories="$(PackageOutputPath)" />
   </Target>
 
